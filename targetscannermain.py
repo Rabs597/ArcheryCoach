@@ -5,6 +5,7 @@
 # take an image (does this need several to average out lighting, etc)
 # 
 # detect the target(s)
+#   use the algorithm I've done in findcolor and on the other PC to identify the centre of the target
 # detect orientation of the target(s) (which way is vertical up?)
 # show these to the user and confirm to start shooting
 # request user input target size and distance
