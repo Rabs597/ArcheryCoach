@@ -4,7 +4,7 @@ import cv2
 # scaling_matrix = np.array([[scale, 0, 0], [0, scale, 0], [0, 0, 1]])  # Use single scale for both x and y
 
 
-class ArcheryTarget:
+class ArcheryReferenceTarget:
     def __init__(self, R):
         self.original_radius = R  # Store the original radius
         self.centre = np.array([R, R])  # Coordinates of the center
@@ -91,11 +91,11 @@ class ArcheryTarget:
 # Example usage:
 if __name__ == "__main__":
     R = 100  # Example radius size for the target
-    target = ArcheryTarget(R)
+    target = ArcheryReferenceTarget(R)
 
     # Define a scaling homography matrix (for example, scaling by 2x)
-    H = np.matrix([[2, 0, 0],
-                  [0, 1, 25],
+    H = np.matrix([[2, 0, 20],
+                  [0.2, 2, 0],
                   [0, 0, 1]], dtype=np.float32)
 
     # Apply the homography with the method
