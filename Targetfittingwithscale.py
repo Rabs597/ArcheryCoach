@@ -15,19 +15,20 @@ class ClickHandler:
             self.clicked_coordinates = (x, y)
             print(f"Clicked coordinates: {self.clicked_coordinates}")
 
-# class TestImage:
-#      def __init__(self,imgpath="input/image3.png"):
-#         #self.original_radius = R  # Store the original radius
-#         #self.centre = np.array([R, R])  # Coordinates of the center
-#         self.original_image=self.loadimage(imgpath)
-#         #self.original_mask = self.overlaid_image.copy()
-#         #self.original_mask = self.original_mast[;2]
-#         #self.overlaid_image = self.original_image.copy()
-#         #self.overlaid_mask = self.original_mask.copy()
-#         self.dummy=1
-#      def loadimage (self,imgpath):
-#         tempimg=cv2.imread(imgpath)
-#         return tempimg
+class TestImage:
+    def __init__(self, imgpath="input/image3.png"):
+        self.original_image = self.loadimage(imgpath)
+        self.overlaid_image = self.original_image.copy()
+        self.centre_coordinates = np.array([0,0],dtype=int)
+
+    def loadimage(self, imgpath):
+        print("Loading image from path:", imgpath)  # Debug the file path
+        tempimg = cv2.imread(imgpath)
+        if tempimg is None:
+            print("Error: Image not found at path:", imgpath)
+        else:
+            print("Image loaded successfully with shape:", tempimg.shape)
+        return tempimg
 
 def show_image_and_get_click(image, message):
     handler = ClickHandler()
@@ -67,7 +68,7 @@ def update_overlay(testimage, dummytarget, dummyalphamask):
     return result
 
 def on_trackbar_change(_):
-    global scale, testimage, center_coordinates, color_radii
+    global scale, testImage, center_coordinates, color_radii
 
     try:
         scale = cv2.getTrackbarPos("Scale", "SSIM Visualization") / 1000.0
@@ -84,7 +85,7 @@ def on_trackbar_change(_):
 
     # Create the dummy target (without perspective shift applied yet)
     dummytarget, dummytargetmask = create_dummy_target(
-        center_coordinates, color_radii, scale, testimage.shape
+        center_coordinates, color_radii, scale, testImage.original_image.shape
     )
 
     # Apply perspective transformation to the dummy target (before applying the mask)
@@ -100,7 +101,7 @@ def on_trackbar_change(_):
         print(f"SSIM Error: {e}")
         return
 
-    result = update_overlay(testimage, dummytarget, dummyalphamask)
+    result = update_overlay(testImage, dummytarget, dummyalphamask)
     cv2.putText(result, f"SSIM: {current_ssim:.4f}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
     
     # Resize the result to show 50% size
@@ -108,19 +109,20 @@ def on_trackbar_change(_):
     cv2.imshow("SSIM Visualization", result_resized)
 
 def main():
-    global center_coordinates_in_test_image
+    global referenceTarget, testImage
 
     # Load test image
     testimagepath = ("input/image2.png")
-    testimage=cv2.imread(testimagepath)
-    if testimage is None:
-        raise FileNotFoundError("Test image not found.")
+    testImage=TestImage(testimagepath)
+    
+
 
     # User selects center and edge
-    center_coordinates = show_image_and_get_click(testimage.copy(), "Click on the center")
-    edge_coordinates = show_image_and_get_click(testimage.copy(), "Click the edge of the white")
-
-    R = np.linalg.norm(np.array(center_coordinates) - np.array(edge_coordinates))
+    center_coordinates_in_test_image = show_image_and_get_click(testImage.original_image, "Click on the center")
+    edge_coordinates_in_test_image = show_image_and_get_click(testImage.original_image, "Click the edge of the white")
+    test_target_radius = np.linalg.norm(np.array(center_coordinates_in_test_image) - np.array(edge_coordinates_in_test_image))
+    
+    referenceTarget=ArcheryReferenceTarget(test_target_radius)
 
     # Trackbars for scale and perspective
     cv2.namedWindow("SSIM Visualization", cv2.WINDOW_NORMAL)

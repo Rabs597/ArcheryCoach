@@ -5,7 +5,7 @@ import cv2
 
 
 class ArcheryReferenceTarget:
-    def __init__(self, R):
+    def __init__(self, R=100):
         self.original_radius = R  # Store the original radius
         self.centre = np.array([R, R])  # Coordinates of the center
         self.original_image, self.original_mask = self.create_normalised_target(R)

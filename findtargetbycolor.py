@@ -8,10 +8,10 @@ refimage = cv2.imread('Target_refs/Fulltarget.jpg')
 testimage = cv2.imread('input\image2.png')
 
 #FIND the centre of the target
-#Option A: find the gold, then fit from there.
+#Option A: find the red (more distinctive than gold, which picks up grass or blue, which might get the sky), then fit from there.
     # tried finding the yellow circles and it got confused by other yellow patches, 
     # which means it won't be robust to lighting
-    #could try the red, as this is less common?
+    #Code below uses red, as this is less common
 #OptionB: could try finding multiple circles and taking the centre of them?
 #OptionC: full sliding of homography over the image - brute force
 
@@ -35,7 +35,7 @@ mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 # Find contours in the mask
 contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-# Loop through the contours and find the largest circle (assumed yellow circle)
+# Loop through the contours and find the largest circle (assumed red circle)
 for contour in contours:
     # Fit a circle to the contour using minEnclosingCircle
     (x, y), radius = cv2.minEnclosingCircle(contour)
