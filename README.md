@@ -1,6 +1,6 @@
 # Archery
-#ARCHITECTURE
-Hub Device
+#SYSTEM ARCHITECTURE
+DEVICE: Hub
    receiving data from a variable number of cameras (USB, CSI, remote devices over BT or WiFi)
        may want cameras to collect a video clip of consistent duration (but might be different 
        between cameras) around a shot or a still after a shot
@@ -14,7 +14,7 @@ Hub Device
 
 Module for managing a camera
    
-Target Scanner Device:
+DEVICE: Target Scanner
 # initialise hardware - camera, microphone, IMU
 # take an image (does this need several to average out lighting, etc)
 # detect the target(s)
@@ -36,6 +36,17 @@ Target Scanner Device:
     # send result to the control station
 
 
-High Speed Camera Device:
+DEVICE: High Speed Camera
 
+DATA STORAGE:
+Considered a database, HDF5 files, etc.  For now I've decided just to put all the data into a simple date based file structure for simplicity.  I can always ingest it into something else later.
+Format for this will be:
+YYYYMMDD_A[Date]\123[ShotNumber]\[Files]  _A indicates session, if multiple sessions in a day. It'll be redundant for now but i might later add a feature to have a new session after 1h of not shooting or a 'new session' button
+Thinking this should be backed up the cloud - expect to use Google Drive as simplest option for now.  Amazon might be better in future for this.
 
+#SOFTWARE ARCHITECTURE ON Hub
+Think this will run a number of services:
+Services to automatically start and run circular buffers for each of the sensors
+Service to detect a shot and get the sensor services to dump their data into a folder
+Service to upload the data to the cloud (but could let GDrive do this automatically)
+Service to run the UI
